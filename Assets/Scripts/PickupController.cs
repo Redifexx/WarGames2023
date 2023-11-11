@@ -15,7 +15,7 @@ public class PickupController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             if (heldObj == null)
             {
