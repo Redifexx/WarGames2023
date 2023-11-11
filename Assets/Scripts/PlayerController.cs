@@ -36,12 +36,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float stepSmooth = 0.1f;
 
     [Header("Physics")]
-    [SerializeField] private float gravity = 9.81f;
+    [SerializeField] public float gravity = 0f;
+    [SerializeField] public float gravityRot = 0f;
+    [SerializeField] public Vector3 gravityDir;
+    [SerializeField] private ConstantForce cForce;
+
     [SerializeField] private float verticalSpeed = 0f;
     [SerializeField] private float jumpSpeed = 0f;
-
     Vector3 moveDir;
-    Vector3 gravityDir;
     Vector3 jumpDir;
     Rigidbody rb;
 
@@ -50,6 +52,7 @@ public class PlayerController : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
+        cForce = GetComponent<ConstantForce>();
 
         //stepRayUpper.transform.position = new Vector3(stepRayUpper.transform.position.x, stepHeight, stepRayUpper.transform.position.z);
     }
@@ -104,10 +107,13 @@ public class PlayerController : MonoBehaviour
     {
         moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
+        //Gravity
+        //rb.AddForce(gravityDir * gravity, ForceMode.Force);
+
         if (isGrounded)
         {
             verticalSpeed = 0f;
-            gravityDir = new Vector3(0, verticalSpeed, 0);
+            //gravityDir = new Vector3(0, verticalSpeed, 0);
             if (Input.GetKey(runKey))
             {
                 rb.AddForce(moveDir.normalized * moveSpeed * 30f, ForceMode.Force);
@@ -139,7 +145,7 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        rb.AddForce(-gravityDir * jumpForce, ForceMode.Impulse);
     }
 
     private void ResetJump()
@@ -159,6 +165,36 @@ public class PlayerController : MonoBehaviour
                 rb.position -= new Vector3(0f, -stepSmooth, 0f);
                 Debug.Log("High hit");
             }
+        }
+    }
+
+    void OnTriggerEnter(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("GravField"))
+        {
+            Debug.Log("Collision enter!!!");
+            gravity = collision.gameObject.GetComponent<GravityData>().gravity;
+            //Gravity based on Y direction
+            gravityRot = collision.gameObject.GetComponent<GravityData>().orientation.rotation.eulerAngles.y;
+            gravityDir = Quaternion.Euler(0f, gravityRot, 0f) * Vector3.down;
+            if (collision.gameObject.GetComponent<GravityData>().isDown)
+            {
+                cForce.force = gravityDir * gravity;
+                transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            }
+            else
+            {
+                cForce.force = -gravityDir * gravity;
+                transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+            }
+        }
+    }
+
+    void OnTriggerExit(Collider collision)
+    {
+        if (collision.gameObject.CompareTag("GravField"))
+        {
+            //cForce.force = Vector3.zero;
         }
     }
 }

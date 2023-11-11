@@ -10,5 +10,6 @@ public class CameraFollower : MonoBehaviour
     void FixedUpdate()
     {
         transform.position = cameraPosition.position;
+        transform.rotation = cameraPosition.rotation;
     }
 }
