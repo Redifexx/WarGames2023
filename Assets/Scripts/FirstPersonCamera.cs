@@ -12,8 +12,11 @@ public class FirstPersonCamera : MonoBehaviour
 
     public Transform orientation;
 
-    float xRot;
-    float yRot;
+    public float xRot;
+    public float yRot;
+    public float zRot = 0f;
+    public float targetZRot = 0f;
+    public float lerpSpeed = 1f;
 
     // Start is called before the first frame update
     void Start()
@@ -25,19 +28,26 @@ public class FirstPersonCamera : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float zRot = 0f;
         if (playerMovement.isStrafing)
         {
-            zRot = -playerMovement.horizontalInput * 0.1f;
+            //zRot = -playerMovement.horizontalInput * zRot;
         }
         float mouseX = (Input.GetAxis("Mouse X")) * Time.deltaTime * senX * multiplier;
         float mouseY = (Input.GetAxis("Mouse Y")) * Time.deltaTime * senY * multiplier;
 
-        yRot += mouseX;
-        xRot -= mouseY;
+        if (playerMovement.isGravDown)
+        {
+            yRot += mouseX;
+            xRot -= mouseY;
+        }
+        else
+        {
+            yRot -= mouseX;
+            xRot += mouseY;
+        }
 
         xRot = Mathf.Clamp(xRot, -90f, 90f);
-
+        zRot = Mathf.Lerp(zRot, targetZRot, Time.deltaTime * lerpSpeed);
         transform.rotation = Quaternion.Euler(xRot, yRot, zRot);
         orientation.rotation = Quaternion.Euler(0, yRot, 0);
 

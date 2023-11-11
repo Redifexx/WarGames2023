@@ -40,9 +40,16 @@ public class PlayerController : MonoBehaviour
     [SerializeField] public float gravityRot = 0f;
     [SerializeField] public Vector3 gravityDir;
     [SerializeField] private ConstantForce cForce;
+    [SerializeField] public bool isGravDown;
+    [SerializeField] public bool isFlipper;
+    [SerializeField] public float flipForce;
 
     [SerializeField] private float verticalSpeed = 0f;
     [SerializeField] private float jumpSpeed = 0f;
+
+    [Header("Camera Stuff")]
+    [SerializeField] private FirstPersonCamera playerCamera;
+
     Vector3 moveDir;
     Vector3 jumpDir;
     Rigidbody rb;
@@ -53,13 +60,20 @@ public class PlayerController : MonoBehaviour
         rb.freezeRotation = true;
         readyToJump = true;
         cForce = GetComponent<ConstantForce>();
-
+        isFlipper = false;
         //stepRayUpper.transform.position = new Vector3(stepRayUpper.transform.position.x, stepHeight, stepRayUpper.transform.position.z);
     }
 
     private void Update()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight * 0.5f + 0.2f, whatIsGround);
+        if (isGravDown)
+        {
+            isGrounded = Physics.Raycast(transform.position, gravityDir, playerHeight * 0.5f + 0.2f, whatIsGround);
+        }
+        else
+        {
+            isGrounded = Physics.Raycast(transform.position, -gravityDir, playerHeight * 0.5f + 0.2f, whatIsGround);
+        }
         MyInput();
         SpeedControl();
 
@@ -105,7 +119,19 @@ public class PlayerController : MonoBehaviour
 
     private void MovePlayer()
     {
-        moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        if (isGravDown)
+        {
+            moveDir = orientation.forward * verticalInput + orientation.right * horizontalInput;
+        }
+        else
+        {
+            moveDir = orientation.forward * verticalInput + -orientation.right * horizontalInput;
+        }
+
+        if (isFlipper)
+        {
+            rb.AddForce(transform.up * flipForce, ForceMode.Force);
+        }
 
         //Gravity
         //rb.AddForce(gravityDir * gravity, ForceMode.Force);
@@ -126,7 +152,6 @@ public class PlayerController : MonoBehaviour
         else if (!(isGrounded))
         {
             rb.AddForce(moveDir.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
-
         }
     }
 
@@ -145,7 +170,16 @@ public class PlayerController : MonoBehaviour
     private void Jump()
     {
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
-        rb.AddForce(-gravityDir * jumpForce, ForceMode.Impulse);
+
+        if (isGravDown)
+        {
+            rb.AddForce(-gravityDir * jumpForce, ForceMode.Impulse);
+        }
+        else 
+        {
+            rb.AddForce(gravityDir * jumpForce, ForceMode.Impulse);
+        }
+        //gravDir fix later
     }
 
     private void ResetJump()
@@ -172,29 +206,41 @@ public class PlayerController : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("GravField"))
         {
-            Debug.Log("Collision enter!!!");
             gravity = collision.gameObject.GetComponent<GravityData>().gravity;
             //Gravity based on Y direction
-            gravityRot = collision.gameObject.GetComponent<GravityData>().orientation.rotation.eulerAngles.y;
-            gravityDir = Quaternion.Euler(0f, gravityRot, 0f) * Vector3.down;
+            gravityDir = Vector3.down;
             if (collision.gameObject.GetComponent<GravityData>().isDown)
             {
                 cForce.force = gravityDir * gravity;
                 transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+                isGravDown = true;
+
+                playerCamera.targetZRot = 0f;
             }
             else
             {
                 cForce.force = -gravityDir * gravity;
-                transform.rotation = Quaternion.Euler(0f, 180f, 0f);
+                transform.rotation = Quaternion.Euler(0f, 180f, 180f);
+                isGravDown = false;
+
+                playerCamera.targetZRot = 180f;
+            }
+        }
+        if (collision.gameObject.CompareTag("Flipper"))
+        {
+            flipForce = collision.gameObject.GetComponent<FlipperData>().flipForce;
+            if (collision.gameObject.GetComponent<FlipperData>().isActive)
+            {
+                isFlipper = true;
             }
         }
     }
 
     void OnTriggerExit(Collider collision)
     {
-        if (collision.gameObject.CompareTag("GravField"))
+        if (collision.gameObject.CompareTag("Flipper"))
         {
-            //cForce.force = Vector3.zero;
+            isFlipper = false;
         }
     }
 }
