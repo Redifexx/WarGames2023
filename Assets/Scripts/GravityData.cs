@@ -18,7 +18,7 @@ public class GravityData : MonoBehaviour
         }
     }
 
-    void GravOn()
+    public void GravOn()
     {
         if (!controlData.isActive)
         {
@@ -26,7 +26,7 @@ public class GravityData : MonoBehaviour
         }
     }
 
-    void GravOff()
+    public void GravOff()
     {
         if (controlData.isActive)
         {

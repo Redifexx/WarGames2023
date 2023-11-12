@@ -209,22 +209,7 @@ public class PlayerController : MonoBehaviour
             gravity = collision.gameObject.GetComponent<GravityData>().gravity;
             //Gravity based on Y direction
             gravityDir = Vector3.down;
-            if (collision.gameObject.GetComponent<GravityData>().isDown)
-            {
-                cForce.force = gravityDir * gravity;
-                transform.rotation = Quaternion.Euler(0f, 0f, 0f);
-                isGravDown = true;
-
-                playerCamera.targetZRot = 0f;
-            }
-            else
-            {
-                cForce.force = -gravityDir * gravity;
-                transform.rotation = Quaternion.Euler(0f, 180f, 180f);
-                isGravDown = false;
-
-                playerCamera.targetZRot = 180f;
-            }
+            UpdatePlayerGrav(collision);
         }
         if (collision.gameObject.CompareTag("Flipper"))
         {
@@ -241,6 +226,24 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Flipper"))
         {
             isFlipper = false;
+        }
+    }
+
+    public void UpdatePlayerGrav(Collider col)
+    {
+        if (col.gameObject.GetComponent<GravityData>().isDown)
+        {
+            cForce.force = gravityDir * gravity;
+            transform.rotation = Quaternion.Euler(0f, 0f, 0f);
+            isGravDown = true;
+            playerCamera.targetZRot = 0f;
+        }
+        else
+        {
+            cForce.force = -gravityDir * gravity;
+            transform.rotation = Quaternion.Euler(0f, 180f, 180f);
+            isGravDown = false;
+            playerCamera.targetZRot = 180f;
         }
     }
 }

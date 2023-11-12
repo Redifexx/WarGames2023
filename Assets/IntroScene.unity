@@ -2310,7 +2310,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c04bc3aaae7b0847945c0931f268da1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlData: {fileID: 1933504208}
   gravity: 9.81
+  setGravity: 0
   isDown: 1
 --- !u!65 &405343010
 BoxCollider:
@@ -4120,7 +4122,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1056637695}
   - component: {fileID: 1056637696}
-  m_Layer: 0
+  - component: {fileID: 1056637697}
+  m_Layer: 6
   m_Name: Field2
   m_TagString: Controllable
   m_Icon: {fileID: 0}
@@ -4163,6 +4166,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 18, y: 0.02, z: 18}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1056637697
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1056637694}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fd5250ad501a8d429ae06cae5cb3523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
 --- !u!1 &1074296213
 GameObject:
   m_ObjectHideFlags: 0
@@ -4724,7 +4740,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1147075647}
   - component: {fileID: 1147075646}
-  - component: {fileID: 1147075645}
+  - component: {fileID: 1147075649}
+  - component: {fileID: 1147075648}
   m_Layer: 0
   m_Name: Flipper (1)
   m_TagString: Flipper
@@ -4732,20 +4749,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1147075645
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1147075644}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ff778cb0ede99747b305c8fb92640b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  flipForce: 40
-  isActive: 1
 --- !u!136 &1147075646
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4785,6 +4788,32 @@ Transform:
   - {fileID: 975781897}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 180, y: 0, z: 0}
+--- !u!114 &1147075648
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1147075644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fd5250ad501a8d429ae06cae5cb3523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+--- !u!114 &1147075649
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1147075644}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d893e44f20b95a40808de18313f18e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flipForce: 40
 --- !u!1 &1199907036
 GameObject:
   m_ObjectHideFlags: 0
@@ -4865,7 +4894,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1204484801}
   - component: {fileID: 1204484800}
-  - component: {fileID: 1204484799}
+  - component: {fileID: 1204484803}
+  - component: {fileID: 1204484802}
   m_Layer: 0
   m_Name: Flipper
   m_TagString: Flipper
@@ -4873,20 +4903,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1204484799
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1204484798}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8ff778cb0ede99747b305c8fb92640b3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  flipForce: 40
-  isActive: 1
 --- !u!136 &1204484800
 CapsuleCollider:
   m_ObjectHideFlags: 0
@@ -4926,6 +4942,32 @@ Transform:
   - {fileID: 1111202209}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1204484802
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204484798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fd5250ad501a8d429ae06cae5cb3523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
+--- !u!114 &1204484803
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1204484798}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d893e44f20b95a40808de18313f18e6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  flipForce: 40
 --- !u!1 &1219638264
 GameObject:
   m_ObjectHideFlags: 0
@@ -6498,7 +6540,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c04bc3aaae7b0847945c0931f268da1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlData: {fileID: 1056637697}
   gravity: 9.81
+  setGravity: 0
   isDown: 0
 --- !u!1 &1793104539
 GameObject:
@@ -7202,7 +7246,8 @@ GameObject:
   m_Component:
   - component: {fileID: 1933504206}
   - component: {fileID: 1933504207}
-  m_Layer: 0
+  - component: {fileID: 1933504208}
+  m_Layer: 6
   m_Name: Field1
   m_TagString: Controllable
   m_Icon: {fileID: 0}
@@ -7245,6 +7290,19 @@ BoxCollider:
   serializedVersion: 3
   m_Size: {x: 18, y: 0.02, z: 18}
   m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &1933504208
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1933504205}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1fd5250ad501a8d429ae06cae5cb3523, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isActive: 1
 --- !u!1 &1950568295
 GameObject:
   m_ObjectHideFlags: 0
@@ -10772,6 +10830,7 @@ GameObject:
   m_Component:
   - component: {fileID: 91088369125974168}
   - component: {fileID: 722912192241613347}
+  - component: {fileID: 722912192241613348}
   m_Layer: 0
   m_Name: OrientationRemote
   m_TagString: Untagged
@@ -10800,6 +10859,20 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &722912192241613348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 722912192241613346}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 11058ccb7b4958f489a2c5a64c564004, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  hasRemote: 0
+  animator: {fileID: 722912192241613347}
 --- !u!23 &728153946300344806
 MeshRenderer:
   m_ObjectHideFlags: 0

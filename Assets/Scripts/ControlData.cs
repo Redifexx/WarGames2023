@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class ControlData : MonoBehaviour
 {
+    public GameObject controlledObj;
     public bool isActive;
 }
