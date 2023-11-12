@@ -5,5 +5,6 @@ using UnityEngine;
 public class ControlData : MonoBehaviour
 {
     public GameObject controlledObj;
+    public float powerDraw;
     public bool isActive;
 }

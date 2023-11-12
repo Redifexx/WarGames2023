@@ -13,6 +13,7 @@ public class GravityObject : MonoBehaviour
     [SerializeField] public bool isHeld;
     [SerializeField] public float flipForce;
     [SerializeField] public float gravMult;
+    [SerializeField] public Collider curCollider;
     Rigidbody rb;
 
     private void Start()
@@ -34,7 +35,7 @@ public class GravityObject : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("GravField"))
         {
-            gravity = collision.gameObject.GetComponent<GravityData>().gravity;
+            curCollider = collision;
             gravityDir = Vector3.down;
             if (isHeld)
             {
@@ -44,24 +45,12 @@ public class GravityObject : MonoBehaviour
             {
                 gravMult = 1f;
             }
-            if (collision.gameObject.GetComponent<GravityData>().isDown)
-            {
-                cForce.force = gravityDir * gravity * gravMult;
-                isGravDown = true;
-            }
-            else
-            {
-                cForce.force = -gravityDir * gravity * gravMult;
-                isGravDown = false;
-            }
+            UpdateOBJGrav(collision, gravMult);
         }
         if (collision.gameObject.CompareTag("Flipper"))
         {
             flipForce = collision.gameObject.GetComponent<FlipperData>().flipForce;
-            if (collision.gameObject.GetComponent<ControlData>().isActive)
-            {
-                isFlipper = true;
-            }
+            isFlipper = true;
         }
     }
 
@@ -69,7 +58,34 @@ public class GravityObject : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Flipper"))
         {
+            flipForce = 0f;
             isFlipper = false;
         }
+    }
+
+    public void UpdateOBJGrav(Collider col, float gravMult_)
+    {
+        gravity = col.gameObject.GetComponent<GravityData>().gravity;
+        if (col.gameObject.GetComponent<GravityData>().isDown)
+        {
+            cForce.force = gravityDir * gravity * gravMult_;
+            isGravDown = true;
+        }
+        else
+        {
+            cForce.force = -gravityDir * gravity * gravMult_;
+            isGravDown = false;
+        }
+    }
+
+    public void UpdateOBJFlipForce(float flipForce_)
+    {
+        flipForce = flipForce_;
+        //isFlipper = isFlipper_;
+    }
+
+    public void LetGo()
+    {
+        UpdateOBJGrav(curCollider, 1f);
     }
 }

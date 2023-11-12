@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System.Linq;
 
 public class RemoteController : MonoBehaviour
 {
     [Header("Physics Parameters")]
-    [SerializeField] private bool hasRemote;
+    [SerializeField] public bool hasRemote;
 
     public Renderer remoteScreen;
     public Material screenDark;
@@ -15,6 +16,7 @@ public class RemoteController : MonoBehaviour
 
     public Animator animator;
     public PlayerController player;
+    public PowerHandler powerHandler;
 
     // Start is called before the first frame update
     void Start()
@@ -26,7 +28,7 @@ public class RemoteController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (!hasRemote)
+        if (!hasRemote && !player.isHolding)
         {
             if (Input.GetAxis("Mouse ScrollWheel") > 0f)
             {
@@ -43,8 +45,6 @@ public class RemoteController : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 100f, layerMask))
             {
-                if (hit.collider.gameObject.CompareTag("Controllable"))
-                {
                     if (hit.collider.gameObject.GetComponent<ControlData>().isActive)
                     {
                         if (remoteScreen.material != screenOn)
@@ -53,10 +53,41 @@ public class RemoteController : MonoBehaviour
                         }
                         if (Input.GetMouseButtonDown(0))
                         {
-                            hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<GravityData>().GravOff();
-                            player.UpdatePlayerGrav(hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>());
-                            hit.collider.gameObject.GetComponent<ControlData>().isActive = false;
-                        }
+                            if (hit.collider.gameObject.CompareTag("GravFloor"))
+                            {
+                                hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<GravityData>().GravOff();
+                                if (hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>().CompareTag("GravField"))
+                                {
+                                    player.UpdatePlayerGrav(hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>());
+                                    GameObject[] layerObjects = GameObject.FindObjectsOfType<GameObject>()
+                                        .Where(obj => obj.layer == LayerMask.NameToLayer("Rigids"))
+                                        .ToArray();
+                                    foreach (GameObject obj in layerObjects)
+                                    {
+                                        obj.GetComponent<GravityObject>().UpdateOBJGrav(hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>(), 1f);
+                                    }
+                                }
+                                hit.collider.gameObject.GetComponent<ControlData>().isActive = false;
+                                powerHandler.UpdatePower();
+                            }
+                            if (hit.collider.gameObject.CompareTag("Flipper"))
+                            {
+                                hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<FlipperData>().FlipOff();
+                                if (hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>().CompareTag("Flipper"))
+                                {
+                                    player.UpdateFlipForce(hit.collider.gameObject.GetComponent<FlipperData>().flipForce);
+                                    GameObject[] layerObjects = GameObject.FindObjectsOfType<GameObject>()
+                                            .Where(obj => obj.layer == LayerMask.NameToLayer("Rigids"))
+                                            .ToArray();
+                                    foreach (GameObject obj in layerObjects)
+                                    {
+                                        obj.GetComponent<GravityObject>().UpdateOBJFlipForce(hit.collider.gameObject.GetComponent<FlipperData>().flipForce);
+                                    }
+                            }
+                                hit.collider.gameObject.GetComponent<ControlData>().isActive = false;
+                                powerHandler.UpdatePower();
+                            }
+                    }
                     }
                     else
                     {
@@ -66,12 +97,44 @@ public class RemoteController : MonoBehaviour
                         }
                         if (Input.GetMouseButtonDown(0))
                         {
-                            hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<GravityData>().GravOn();
-                            player.UpdatePlayerGrav(hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>());
-                            hit.collider.gameObject.GetComponent<ControlData>().isActive = true;
+                            if (hit.collider.gameObject.CompareTag("GravFloor"))
+                            {
+                                hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<GravityData>().GravOn();
+                                if (hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>().CompareTag("GravField"))
+                                {
+                                    player.UpdatePlayerGrav(hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>());
+                                    GameObject[] layerObjects = GameObject.FindObjectsOfType<GameObject>()
+                                            .Where(obj => obj.layer == LayerMask.NameToLayer("Rigids"))
+                                            .ToArray();
+                                    foreach (GameObject obj in layerObjects)
+                                    {
+                                        obj.GetComponent<GravityObject>().UpdateOBJGrav(hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>(), 1f);
+                                    }
+                                }
+                                powerHandler.UpdatePower();
+                                hit.collider.gameObject.GetComponent<ControlData>().isActive = true;
+                                powerHandler.UpdatePower();
+                            }
+                            if (hit.collider.gameObject.CompareTag("Flipper"))
+                            {
+                                hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<FlipperData>().FlipOn();
+                                if (hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>().CompareTag("Flipper"))
+                                {
+                                    player.UpdateFlipForce(hit.collider.gameObject.GetComponent<FlipperData>().flipForce);
+                                    GameObject[] layerObjects = GameObject.FindObjectsOfType<GameObject>()
+                                                .Where(obj => obj.layer == LayerMask.NameToLayer("Rigids"))
+                                                .ToArray();
+                                    foreach (GameObject obj in layerObjects)
+                                    {
+                                        obj.GetComponent<GravityObject>().UpdateOBJFlipForce(hit.collider.gameObject.GetComponent<FlipperData>().flipForce);
+                                    }
+                            }
+                                hit.collider.gameObject.GetComponent<ControlData>().isActive = true;
+                                powerHandler.UpdatePower();
+                            }
                         }
                     }
-                }
+
             }
             else
             {

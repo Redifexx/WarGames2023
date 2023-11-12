@@ -47,6 +47,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private float verticalSpeed = 0f;
     [SerializeField] private float jumpSpeed = 0f;
 
+    public bool isHolding;
+
+    private PowerHandler powerHandler;
+
     [Header("Camera Stuff")]
     [SerializeField] private FirstPersonCamera playerCamera;
 
@@ -60,7 +64,10 @@ public class PlayerController : MonoBehaviour
         rb.freezeRotation = true;
         readyToJump = true;
         cForce = GetComponent<ConstantForce>();
+        powerHandler = GetComponent<PowerHandler>();
         isFlipper = false;
+        flipForce = 0f;
+        isHolding = false;
         //stepRayUpper.transform.position = new Vector3(stepRayUpper.transform.position.x, stepHeight, stepRayUpper.transform.position.z);
     }
 
@@ -128,6 +135,7 @@ public class PlayerController : MonoBehaviour
             moveDir = orientation.forward * verticalInput + -orientation.right * horizontalInput;
         }
 
+        //FLIP FORCE BABY
         if (isFlipper)
         {
             rb.AddForce(transform.up * flipForce, ForceMode.Force);
@@ -149,7 +157,7 @@ public class PlayerController : MonoBehaviour
                 rb.AddForce(moveDir.normalized * moveSpeed * 10f, ForceMode.Force);
             }
         }
-        else if (!(isGrounded))
+        else if (!(isGrounded) && (gravity != 0f))
         {
             rb.AddForce(moveDir.normalized * moveSpeed * 10f * airMultiplier, ForceMode.Force);
         }
@@ -204,33 +212,46 @@ public class PlayerController : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)
     {
+        int roomLayer = LayerMask.NameToLayer("Room");
         if (collision.gameObject.CompareTag("GravField"))
         {
-            gravity = collision.gameObject.GetComponent<GravityData>().gravity;
             //Gravity based on Y direction
             gravityDir = Vector3.down;
             UpdatePlayerGrav(collision);
         }
         if (collision.gameObject.CompareTag("Flipper"))
         {
+            Debug.Log(collision.gameObject.name);
             flipForce = collision.gameObject.GetComponent<FlipperData>().flipForce;
             if (collision.gameObject.GetComponent<ControlData>().isActive)
             {
                 isFlipper = true;
             }
         }
+        if (collision.gameObject.layer == roomLayer)
+        {
+            powerHandler.SetPower(collision.gameObject.GetComponent<RoomData>().powerLevel);
+        }
     }
 
     void OnTriggerExit(Collider collision)
     {
+        int roomLayer = LayerMask.NameToLayer("Room");
         if (collision.gameObject.CompareTag("Flipper"))
         {
+            flipForce = 0f;
             isFlipper = false;
+        }
+        if (collision.gameObject.layer == roomLayer)
+        {
+            powerHandler.SetPower(0f);
         }
     }
 
     public void UpdatePlayerGrav(Collider col)
     {
+        Debug.Log("Update " + gravity);
+        gravity = col.gameObject.GetComponent<GravityData>().gravity;
         if (col.gameObject.GetComponent<GravityData>().isDown)
         {
             cForce.force = gravityDir * gravity;
@@ -245,5 +266,11 @@ public class PlayerController : MonoBehaviour
             isGravDown = false;
             playerCamera.targetZRot = 180f;
         }
+    }
+
+    public void UpdateFlipForce(float flipForce_)
+    {
+        flipForce = flipForce_;
+        //isFlipper = isFlipper_;
     }
 }

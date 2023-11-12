@@ -8,6 +8,8 @@ public class PickupController : MonoBehaviour
     [SerializeField] Transform holdArea;
     private GameObject heldObj;
     private Rigidbody heldObjRB;
+    public RemoteController remote;
+    public PlayerController player;
 
     [Header("Physics Parameters")]
     [SerializeField] private float pickupRange = 5.0f;
@@ -15,7 +17,7 @@ public class PickupController : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E) && !remote.hasRemote)
         {
             if (heldObj == null)
             {
@@ -52,6 +54,7 @@ public class PickupController : MonoBehaviour
         {
             heldObjRB = pickObj.GetComponent<Rigidbody>();
             pickObj.GetComponent<GravityObject>().isHeld = true;
+            player.isHolding = true;
             heldObjRB.drag = 10;
             heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
 
@@ -63,6 +66,8 @@ public class PickupController : MonoBehaviour
     void DropObject()
     {
         heldObj.GetComponent<GravityObject>().isHeld = false;
+        heldObj.GetComponent<GravityObject>().LetGo();
+        player.isHolding = false;
         heldObjRB.drag = 0;
         heldObjRB.constraints = RigidbodyConstraints.None;
 
