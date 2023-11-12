@@ -229,7 +229,7 @@ public class PlayerController : MonoBehaviour
         if (collision.gameObject.CompareTag("Flipper"))
         {
             flipForce = collision.gameObject.GetComponent<FlipperData>().flipForce;
-            if (collision.gameObject.GetComponent<FlipperData>().isActive)
+            if (collision.gameObject.GetComponent<ControlData>().isActive)
             {
                 isFlipper = true;
             }

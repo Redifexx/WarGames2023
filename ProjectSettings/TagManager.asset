@@ -6,6 +6,8 @@ TagManager:
   tags:
   - GravField
   - Flipper
+  - GravFloor
+  - Controllable
   layers:
   - Default
   - TransparentFX
