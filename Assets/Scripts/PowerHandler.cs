@@ -16,6 +16,7 @@ public class PowerHandler : MonoBehaviour
     {
         maxPower = 0f;
         curPower = 0f;
+        powerText.text = (0f).ToString() + "%";
     }
 
     public void SetPower(float maxPower_)
@@ -30,13 +31,19 @@ public class PowerHandler : MonoBehaviour
         foreach (GameObject obj in layerObjects)
         {
             Debug.Log(obj.name);
-            if (obj.GetComponent<ControlData>().isActive)
+            if (!obj.CompareTag("QuantumPad") && obj.GetComponent<ControlData>().isActive)
             {
                 curPower += obj.GetComponent<ControlData>().powerDraw;
             }
         }
-
-        powerText.text = curPower.ToString();
+        if (maxPower != 0)
+        {
+            powerText.text = ((curPower / maxPower) * 100f).ToString() + "%";
+        }
+        else
+        {
+            powerText.text = (0f).ToString() + "%";
+        }
     }
 
     public void UpdatePower()
@@ -45,13 +52,32 @@ public class PowerHandler : MonoBehaviour
         curPower = 0f;
         foreach (GameObject obj in layerObjects)
         {
-            if (obj.GetComponent<ControlData>().isActive)
+            if (!obj.CompareTag("QuantumPad") && obj.GetComponent<ControlData>().isActive)
             {
                 Debug.Log(obj.GetComponent<ControlData>().powerDraw);
                 curPower += obj.GetComponent<ControlData>().powerDraw;
             }
         }
 
-        powerText.text = curPower.ToString();
+        if (maxPower != 0)
+        {
+            powerText.text = ((curPower / maxPower) * 100f).ToString() + "%";
+        }
+        else
+        {
+            powerText.text = (0f).ToString() + "%";
+        }
+    }
+
+    public bool CheckMax(float powerDraw_)
+    {
+        if ((curPower + powerDraw_) > maxPower)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }    
     }
 }

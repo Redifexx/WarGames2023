@@ -9,6 +9,9 @@ TagManager:
   - GravFloor
   - Controllable
   - Room
+  - Crate
+  - Charger
+  - QuantumPad
   layers:
   - Default
   - TransparentFX
@@ -19,7 +22,7 @@ TagManager:
   - Controllable
   - Room
   - Rigids
-  - 
+  - Charger
   - 
   - 
   - 

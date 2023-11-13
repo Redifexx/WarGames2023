@@ -25,7 +25,10 @@ public class PickupController : MonoBehaviour
                 if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, pickupRange))
                 {
                     Debug.Log("Hit!");
-                    PickupObject(hit.transform.gameObject);
+                    if (!hit.collider.gameObject.CompareTag("Crate"))
+                    {
+                        PickupObject(hit.transform.gameObject);
+                    }
                 }
             }
             else

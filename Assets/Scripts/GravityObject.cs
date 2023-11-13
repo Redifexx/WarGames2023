@@ -11,6 +11,7 @@ public class GravityObject : MonoBehaviour
     [SerializeField] public bool isGravDown;
     [SerializeField] public bool isFlipper;
     [SerializeField] public bool isHeld;
+    [SerializeField] public bool isCrate;
     [SerializeField] public float flipForce;
     [SerializeField] public float gravMult;
     [SerializeField] public Collider curCollider;
@@ -21,13 +22,28 @@ public class GravityObject : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         cForce = GetComponent<ConstantForce>();
         isHeld = false;
+        if (this.gameObject.CompareTag("Crate"))
+        {
+            isCrate = true;
+        }
+        else
+        {
+            isCrate = false;
+        }
     }
 
     private void FixedUpdate()
     {
         if (isFlipper)
         {
-            rb.AddForce(transform.up * flipForce, ForceMode.Force);
+            if (isGravDown)
+            {
+                rb.AddForce(Vector3.up * flipForce, ForceMode.Force);
+            }
+            else
+            {
+                rb.AddForce(Vector3.down * flipForce, ForceMode.Force);
+            }
         }
     }
 
@@ -52,6 +68,11 @@ public class GravityObject : MonoBehaviour
             flipForce = collision.gameObject.GetComponent<FlipperData>().flipForce;
             isFlipper = true;
         }
+        if (collision.gameObject.CompareTag("QuantumPad") && !isCrate)
+        {
+            collision.gameObject.GetComponent<QuantumController>().objectCount++;
+            collision.gameObject.GetComponent<QuantumController>().Check();
+        }
     }
 
     void OnTriggerExit(Collider collision)
@@ -60,6 +81,11 @@ public class GravityObject : MonoBehaviour
         {
             flipForce = 0f;
             isFlipper = false;
+        }
+        if (collision.gameObject.CompareTag("QuantumPad") && !isCrate)
+        {
+            collision.gameObject.GetComponent<QuantumController>().objectCount--;
+            collision.gameObject.GetComponent<QuantumController>().Check();
         }
     }
 

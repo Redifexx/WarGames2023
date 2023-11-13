@@ -45,7 +45,7 @@ public class RemoteController : MonoBehaviour
             RaycastHit hit;
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.forward), out hit, 100f, layerMask))
             {
-                    if (hit.collider.gameObject.GetComponent<ControlData>().isActive)
+                    if (!hit.collider.gameObject.CompareTag("QuantumPad") && hit.collider.gameObject.GetComponent<ControlData>().isActive)
                     {
                         if (remoteScreen.material != screenOn)
                         {
@@ -111,10 +111,12 @@ public class RemoteController : MonoBehaviour
                                         obj.GetComponent<GravityObject>().UpdateOBJGrav(hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>(), 1f);
                                     }
                                 }
+                                if (powerHandler.CheckMax(hit.collider.gameObject.GetComponent<ControlData>().powerDraw))
+                                {
+                                    hit.collider.gameObject.GetComponent<ControlData>().isActive = true;
+                                }
                                 powerHandler.UpdatePower();
-                                hit.collider.gameObject.GetComponent<ControlData>().isActive = true;
-                                powerHandler.UpdatePower();
-                            }
+                        }
                             if (hit.collider.gameObject.CompareTag("Flipper"))
                             {
                                 hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<FlipperData>().FlipOn();
@@ -128,8 +130,11 @@ public class RemoteController : MonoBehaviour
                                     {
                                         obj.GetComponent<GravityObject>().UpdateOBJFlipForce(hit.collider.gameObject.GetComponent<FlipperData>().flipForce);
                                     }
-                            }
-                                hit.collider.gameObject.GetComponent<ControlData>().isActive = true;
+                                }
+                                if (powerHandler.CheckMax(hit.collider.gameObject.GetComponent<ControlData>().powerDraw))
+                                {
+                                    hit.collider.gameObject.GetComponent<ControlData>().isActive = true;
+                                }
                                 powerHandler.UpdatePower();
                             }
                         }
