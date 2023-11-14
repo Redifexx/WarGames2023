@@ -12,6 +12,7 @@ public class CrateController : MonoBehaviour
     public Renderer cube;
     public Material[] materials;
     public float maxPower = 100f;
+    public Light pointLight;
     void Start()
     {
         cratePower = 0f;
@@ -32,6 +33,7 @@ public class CrateController : MonoBehaviour
                 float t = Mathf.InverseLerp(0f, maxPower, cratePower);
                 Color lerpedColor = Color.Lerp(startColor, endColor, t);
                 materials[1].SetColor("_EmissiveColor", lerpedColor * 20f);
+                pointLight.color = lerpedColor;
             }
             else
             {

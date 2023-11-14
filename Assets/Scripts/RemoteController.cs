@@ -62,9 +62,12 @@ public class RemoteController : MonoBehaviour
                                     GameObject[] layerObjects = GameObject.FindObjectsOfType<GameObject>()
                                         .Where(obj => obj.layer == LayerMask.NameToLayer("Rigids"))
                                         .ToArray();
+                                    int count = 1;
                                     foreach (GameObject obj in layerObjects)
                                     {
+                                        Debug.Log(count);
                                         obj.GetComponent<GravityObject>().UpdateOBJGrav(hit.collider.gameObject.GetComponent<ControlData>().controlledObj.GetComponent<Collider>(), 1f);
+                                        count++;
                                     }
                                 }
                                 hit.collider.gameObject.GetComponent<ControlData>().isActive = false;
@@ -83,11 +86,15 @@ public class RemoteController : MonoBehaviour
                                     {
                                         obj.GetComponent<GravityObject>().UpdateOBJFlipForce(hit.collider.gameObject.GetComponent<FlipperData>().flipForce);
                                     }
-                            }
+                                }
                                 hit.collider.gameObject.GetComponent<ControlData>().isActive = false;
                                 powerHandler.UpdatePower();
                             }
-                    }
+                            if (hit.collider.gameObject.GetComponent<AudioData>().hasAudio)
+                            {
+                                hit.collider.gameObject.GetComponent<AudioData>().StopAudio();
+                            }
+                        }
                     }
                     else
                     {
@@ -136,6 +143,10 @@ public class RemoteController : MonoBehaviour
                                     hit.collider.gameObject.GetComponent<ControlData>().isActive = true;
                                 }
                                 powerHandler.UpdatePower();
+                            }
+                            if (hit.collider.gameObject.GetComponent<AudioData>().hasAudio)
+                            {
+                                hit.collider.gameObject.GetComponent<AudioData>().PlayAudio();
                             }
                         }
                     }
