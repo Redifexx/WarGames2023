@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GravityObject : MonoBehaviour
+public class GravityObjectV2 : MonoBehaviour
 {
     [Header("Physics")]
     [SerializeField] public float gravity = 0f;
@@ -17,8 +17,18 @@ public class GravityObject : MonoBehaviour
     [SerializeField] public Collider curCollider;
     Rigidbody rb;
 
+    //New
+    //[SerializeField] SphereCollider sphereCol;
+    public LayerMask gravMask;
+    public float checkInterval = 0.1f;
+
+    private float timeSinceLastCheck = 0f;
+
+
     private void Start()
     {
+        //sphereCol = GetComponent<SphereCollider>();
+        gravMask = 1 << LayerMask.NameToLayer("Grav");
         rb = GetComponent<Rigidbody>();
         cForce = GetComponent<ConstantForce>();
         isHeld = false;
@@ -35,16 +45,23 @@ public class GravityObject : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (isFlipper)
+        timeSinceLastCheck += Time.fixedDeltaTime;
+
+        if (timeSinceLastCheck >= checkInterval)
         {
-            if (isGravDown)
+            // Get the radius of the SphereCollider
+            float sphereRadius = 50f;
+
+            // Use Physics.OverlapSphere with the determined radius
+            Collider[] colliders = Physics.OverlapSphere(transform.position, sphereRadius, gravMask);
+
+            foreach (Collider collider in colliders)
             {
-                rb.AddForce(Vector3.up * flipForce, ForceMode.Force);
+                // Do something with the GameObjects within the sphere collider
+                Debug.Log("Object in sphere collider: " + collider.gameObject.name);
             }
-            else
-            {
-                rb.AddForce(Vector3.down * flipForce, ForceMode.Force);
-            }
+
+            timeSinceLastCheck = 0f;
         }
     }
 
