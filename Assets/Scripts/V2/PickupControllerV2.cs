@@ -56,7 +56,7 @@ public class PickupControllerV2 : MonoBehaviour
         if (pickObj.GetComponent<Rigidbody>())
         {
             heldObjRB = pickObj.GetComponent<Rigidbody>();
-            pickObj.GetComponent<GravityObject>().isHeld = true;
+            pickObj.GetComponent<GravityObjectV2>().isHeld = true;
             player.isHolding = true;
             heldObjRB.drag = 10;
             heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
@@ -68,8 +68,8 @@ public class PickupControllerV2 : MonoBehaviour
 
     void DropObject()
     {
-        heldObj.GetComponent<GravityObject>().isHeld = false;
-        heldObj.GetComponent<GravityObject>().LetGo();
+        heldObj.GetComponent<GravityObjectV2>().isHeld = false;
+        heldObj.GetComponent<GravityObjectV2>().LetGo();
         player.isHolding = false;
         heldObjRB.drag = 0;
         heldObjRB.constraints = RigidbodyConstraints.None;

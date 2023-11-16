@@ -15,20 +15,21 @@ public class GravityObjectV2 : MonoBehaviour
     [SerializeField] public float flipForce;
     [SerializeField] public float gravMult;
     [SerializeField] public Collider curCollider;
+    [SerializeField] public List<GameObject> allForces;
     Rigidbody rb;
 
     //New
     //[SerializeField] SphereCollider sphereCol;
-    public LayerMask gravMask;
+    //public LayerMask gravMask;
     public float checkInterval = 0.1f;
-
     private float timeSinceLastCheck = 0f;
 
 
     private void Start()
     {
+        allForces = new List<GameObject>();
         //sphereCol = GetComponent<SphereCollider>();
-        gravMask = 1 << LayerMask.NameToLayer("Grav");
+        //gravMask = 1 << LayerMask.NameToLayer("Grav");
         rb = GetComponent<Rigidbody>();
         cForce = GetComponent<ConstantForce>();
         isHeld = false;
@@ -41,10 +42,12 @@ public class GravityObjectV2 : MonoBehaviour
             isCrate = false;
         }
         isGravDown = true;
+        UpdateOBJGrav(1);
     }
 
     private void FixedUpdate()
     {
+        /*
         timeSinceLastCheck += Time.fixedDeltaTime;
 
         if (timeSinceLastCheck >= checkInterval)
@@ -63,10 +66,18 @@ public class GravityObjectV2 : MonoBehaviour
 
             timeSinceLastCheck = 0f;
         }
+        */
     }
 
     void OnTriggerEnter(Collider collision)
     {
+        int gravMask = LayerMask.NameToLayer("Grav");
+        if (collision.gameObject.layer == gravMask)
+        {
+            allForces.Add(collision.gameObject);
+            UpdateOBJGrav(1);
+        }
+        /*
         if (collision.gameObject.CompareTag("GravField"))
         {
             curCollider = collision;
@@ -91,10 +102,18 @@ public class GravityObjectV2 : MonoBehaviour
             collision.gameObject.GetComponent<QuantumController>().objectCount++;
             collision.gameObject.GetComponent<QuantumController>().Check();
         }
+        */
     }
 
     void OnTriggerExit(Collider collision)
     {
+        int gravMask = LayerMask.NameToLayer("Grav");
+        if (collision.gameObject.layer == gravMask)
+        {
+            allForces.Remove(collision.gameObject);
+            UpdateOBJGrav(1);
+        }
+        /*
         if (collision.gameObject.CompareTag("Flipper"))
         {
             flipForce = 0f;
@@ -105,10 +124,23 @@ public class GravityObjectV2 : MonoBehaviour
             collision.gameObject.GetComponent<QuantumController>().objectCount--;
             collision.gameObject.GetComponent<QuantumController>().Check();
         }
+        */
     }
 
-    public void UpdateOBJGrav(Collider col, float gravMult_)
+    public void UpdateOBJGrav(float gravMult_)
     {
+        List<Vector3> allDirs = new List<Vector3>();
+        List<Vector3> allVectors = new List<Vector3>();
+        List<float> allGravs = new List<float>();
+        foreach (GameObject obj in allForces)
+        {
+            allDirs.Add(obj.GetComponent<GravityDataV2>().gravDir);
+            allVectors.Add(obj.GetComponent<GravityDataV2>().gravNormal);
+            allGravs.Add(obj.GetComponent<GravityDataV2>().gravity);
+        }
+        Vector3 curGrav = CalcAvg(allDirs);
+        cForce.force = -curGrav * gravMult_;
+        /*
         gravity = col.gameObject.GetComponent<GravityData>().gravity;
         if (col.gameObject.GetComponent<GravityData>().isDown)
         {
@@ -120,6 +152,7 @@ public class GravityObjectV2 : MonoBehaviour
             cForce.force = -gravityDir * gravity * gravMult_;
             isGravDown = false;
         }
+        */
     }
 
     public void UpdateOBJFlipForce(float flipForce_)
@@ -131,5 +164,75 @@ public class GravityObjectV2 : MonoBehaviour
     public void LetGo()
     {
         //UpdateOBJGrav(curCollider, 1f);
+    }
+
+    public Vector3 CalcDot(List<Vector3> allForces_, List<float> allGravs_)
+    {
+        Vector3 dotVector = Vector3.zero;
+        for (int i = 0; i < allForces_.Count; i++)
+        {
+            for (int j = i + 1; j < allForces_.Count; j++)
+            {
+                // Calculate the dot product between normalized gravity vectors
+                float dotProduct = Vector3.Dot(allForces_[i], allForces_[j]);
+
+                // Combine the gravity vectors based on their strengths and dot product
+                Vector3 combined = allForces_[i] * allGravs_[i] + allForces_[j] * allGravs_[j] * dotProduct;
+
+                // Accumulate the combined gravity vectors
+                dotVector += combined;
+            }
+        }
+        return dotVector;
+    }
+
+    public Vector3 CalcAvg(List<Vector3> allDirs_)
+    {
+        Vector3 avgVector = Vector3.zero;
+        int countX = 0;
+        int countY = 0;
+        int countZ = 0;
+        if (allDirs_ != null && allDirs_.Count > 0)
+        {
+            float sumX = 0f;
+            float sumY = 0f;
+            float sumZ = 0f;
+
+            foreach (Vector3 vector in allDirs_)
+            {
+                if (vector.x != 0f)
+                {
+                    countX++;
+                }
+                if (vector.y != 0f)
+                {
+                    countY++;
+                }
+                if (vector.z != 0f)
+                {
+                    countZ++;
+                }
+
+                sumX += vector.x;
+                sumY += vector.y;
+                sumZ += vector.z;
+            }
+
+            if (countX == 0)
+            {
+                countX++;
+            }
+            if (countY == 0)
+            {        
+                countY++;
+            }
+            if (countZ == 0)
+            {        
+                countZ++;
+            }
+            int count = allDirs_.Count;
+            avgVector = new Vector3(sumX / countX, sumY / countY, sumZ / countZ);
+        }
+        return avgVector;
     }
 }
