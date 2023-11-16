@@ -16,6 +16,7 @@ public class GravityObjectV2 : MonoBehaviour
     [SerializeField] public float gravMult;
     [SerializeField] public Collider curCollider;
     [SerializeField] public List<GameObject> allForces;
+    [SerializeField] public Vector3 curGrav;
     Rigidbody rb;
 
     //New
@@ -27,11 +28,12 @@ public class GravityObjectV2 : MonoBehaviour
 
     private void Start()
     {
+        gravMult = 1f;
         allForces = new List<GameObject>();
         //sphereCol = GetComponent<SphereCollider>();
         //gravMask = 1 << LayerMask.NameToLayer("Grav");
         rb = GetComponent<Rigidbody>();
-        cForce = GetComponent<ConstantForce>();
+        //cForce = GetComponent<ConstantForce>();
         isHeld = false;
         if (this.gameObject.CompareTag("Crate"))
         {
@@ -67,6 +69,7 @@ public class GravityObjectV2 : MonoBehaviour
             timeSinceLastCheck = 0f;
         }
         */
+        rb.AddForce(-curGrav * gravMult, ForceMode.Acceleration);
     }
 
     void OnTriggerEnter(Collider collision)
@@ -138,8 +141,8 @@ public class GravityObjectV2 : MonoBehaviour
             allVectors.Add(obj.GetComponent<GravityDataV2>().gravNormal);
             allGravs.Add(obj.GetComponent<GravityDataV2>().gravity);
         }
-        Vector3 curGrav = CalcAvg(allDirs);
-        cForce.force = -curGrav * gravMult_;
+        curGrav = CalcAvg(allDirs);
+        //cForce.force = -curGrav * gravMult_;
         /*
         gravity = col.gameObject.GetComponent<GravityData>().gravity;
         if (col.gameObject.GetComponent<GravityData>().isDown)
@@ -164,6 +167,7 @@ public class GravityObjectV2 : MonoBehaviour
     public void LetGo()
     {
         //UpdateOBJGrav(curCollider, 1f);
+        gravMult = 1f;
     }
 
     public Vector3 CalcDot(List<Vector3> allForces_, List<float> allGravs_)

@@ -60,7 +60,7 @@ public class PickupControllerV2 : MonoBehaviour
             player.isHolding = true;
             heldObjRB.drag = 10;
             heldObjRB.constraints = RigidbodyConstraints.FreezeRotation;
-
+            pickObj.GetComponent<GravityObjectV2>().gravMult = 0f;
             heldObjRB.transform.parent = holdArea;
             heldObj = pickObj;
         }
