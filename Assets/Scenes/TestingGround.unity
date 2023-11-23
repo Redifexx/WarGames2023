@@ -15891,7 +15891,7 @@ MonoBehaviour:
   gravity: 0
   gravityDir: {x: 0, y: 0, z: 0}
   cForce: {fileID: 0}
-  isGravDown: 0
+  isGravDown: 1
   isFlipper: 0
   isHeld: 0
   isCrate: 0
