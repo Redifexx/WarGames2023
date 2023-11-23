@@ -69,6 +69,7 @@ public class GravityObjectV2 : MonoBehaviour
             timeSinceLastCheck = 0f;
         }
         */
+        CalcDist();
         rb.AddForce(-curGrav * gravMult, ForceMode.Acceleration);
     }
 
@@ -238,5 +239,37 @@ public class GravityObjectV2 : MonoBehaviour
             avgVector = new Vector3(sumX / countX, sumY / countY, sumZ / countZ);
         }
         return avgVector;
+    }
+
+    public List<float> CalcDist()
+    {
+        List<Vector3> allDirs = new List<Vector3>();
+        List<Vector3> allVectors = new List<Vector3>();
+        List<float> allGravs = new List<float>();
+        List<float> allDists = new List<float>();
+        foreach (GameObject obj in allForces)
+        {
+            allDirs.Add(obj.GetComponent<GravityDataV2>().gravDir);
+            allVectors.Add(obj.GetComponent<GravityDataV2>().gravNormal);
+            allGravs.Add(obj.GetComponent<GravityDataV2>().gravity);
+            RaycastHit hit;
+            if (Physics.Raycast(transform.position, -obj.GetComponent<GravityDataV2>().gravNormal, out hit, 35.0f))
+            {
+                Debug.Log("game: " + hit.collider.gameObject);
+                Debug.Log("obj: " + obj);
+                if (hit.collider.gameObject == obj)
+                {
+                    Debug.Log(hit.distance);
+                    allDists.Add(hit.distance);
+                }
+                else
+                {
+                    allDists.Add(0f);
+                }
+            }
+
+        }
+        return allDists;
+
     }
 }
